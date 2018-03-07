@@ -283,19 +283,19 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: fe3498435a2f1f542baec5966056b620, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.7071068
+      value: -0.5
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: fe3498435a2f1f542baec5966056b620, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: fe3498435a2f1f542baec5966056b620, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: fe3498435a2f1f542baec5966056b620, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7071068
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: fe3498435a2f1f542baec5966056b620, type: 3}
       propertyPath: m_RootOrder
@@ -309,6 +309,14 @@ Prefab:
       propertyPath: m_Name
       value: woodlog (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: fe3498435a2f1f542baec5966056b620, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90.00001
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: fe3498435a2f1f542baec5966056b620, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 90
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: fe3498435a2f1f542baec5966056b620, type: 3}
   m_IsPrefabParent: 0
@@ -321,15 +329,15 @@ Prefab:
     m_Modifications:
     - target: {fileID: 400000, guid: 24ad4af2dacba4b43809240132030068, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.896
+      value: -0.874
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 24ad4af2dacba4b43809240132030068, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.089
+      value: 1.498
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 24ad4af2dacba4b43809240132030068, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.316
+      value: -0.021
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 24ad4af2dacba4b43809240132030068, type: 3}
       propertyPath: m_LocalRotation.x

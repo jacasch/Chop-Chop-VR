@@ -6,14 +6,16 @@ public class WoodLog : MonoBehaviour {
 
     public float cutThreshold;
     public float splitResitance;
+    private float leftOverResistance;
 
     public GameObject logSplit;
 
     private bool beingCut = false;
+    private Vector3 cutNormalLocalSpace;
 
 	// Use this for initialization
 	void Start () {
-		
+        leftOverResistance = splitResitance;
 	}
 	
 	// Update is called once per frame
@@ -35,6 +37,11 @@ public class WoodLog : MonoBehaviour {
             //print(tiltAngle);
 
             CalculateHitImpact(collision.transform.parent, velocity, tiltAngle, collision);
+        }
+        if (beingCut)
+        {
+            print(collision.collider.gameObject.name);
+            CalculateCutImpact(transform.parent.Find("Blade").GetComponent<Axe>().velocity);
         }
     }
 
@@ -72,6 +79,17 @@ public class WoodLog : MonoBehaviour {
         }
     }
 
+    private void CalculateCutImpact(Vector3 ImpactForce) {
+        float AngleCutToImpact = Mathf.Abs(90 - Vector3.Angle(transform.localToWorldMatrix.MultiplyVector(cutNormalLocalSpace), ImpactForce));
+        print(ImpactForce);
+        print(AngleCutToImpact);
+
+        ExtendCut(ImpactForce);
+        if (leftOverResistance <= 0) {
+            SplitLog(transform.parent);
+        }
+    }
+
     private void HitLog(Vector3 collisionPoint, Vector3 impactForce)
     {
         gameObject.layer = LayerMask.NameToLayer("Environment");
@@ -81,30 +99,49 @@ public class WoodLog : MonoBehaviour {
         rb.constraints = RigidbodyConstraints.None;
         rb.AddForceAtPosition(impactForce * 500, collisionPoint);
     }
-    private void CutLog(Transform axe, Vector3 impactVelocity)
+    private void CutLog(Transform axe, Vector3 impactForce)
     {
         beingCut = true;
+        print(axe.transform.forward.normalized);
+        cutNormalLocalSpace = transform.worldToLocalMatrix.MultiplyVector(axe.transform.forward.normalized);
+        print(cutNormalLocalSpace);
         //set axe as parent
         transform.parent = axe.transform;
+        //change collision layer to environment
+        gameObject.layer = LayerMask.NameToLayer("Environment");
         //move log up the blade according to impact strength
-        Vector3 position = transform.position;
-        float logLength = GetComponent<Collider>().bounds.size.y;
-        //position -= impactVelocity.normalized * (logLength / 2) * (impactVelocity.magnitude / splitResitance);
-        position -= impactVelocity.normalized * 0.1f;
-        splitResitance -= impactVelocity.magnitude;
-        transform.position = position;
+        ExtendCut(impactForce);
 
+    }
+    private void ExtendCut(Vector3 force)
+    {
+        //Calculate new splitresistance
+        leftOverResistance -= force.magnitude;
+        //TODO Offset for relative blade placemnet on first cut
+        float cutRatio = leftOverResistance / splitResitance;
+        Transform blade = transform.parent.Find("Blade");
+        float halfLogLength = GetComponent<Collider>().bounds.size.y / 2f;
+        transform.position = blade.position - transform.forward * halfLogLength * cutRatio - transform.forward * halfLogLength;
     }
     private void SplitLog(Transform axe)
     {
         /*//diable physics components of log
         gameObject.GetComponent<Collider>().enabled = false;*/
+
+        //rotate to blade
+        Vector3 axeUpProj = axe.transform.up;
+        axeUpProj.y = 0; //projection on xz plane (ground)
+        Vector3 logFwdProj = transform.up;
+        logFwdProj.y = 0; //projection on xz plane (ground)
+        float angleAxeToLog = Vector3.Angle(axeUpProj, logFwdProj);
+        print(angleAxeToLog);
+        transform.Rotate(0, 0, angleAxeToLog);
         //instanitate 2 logsplits in position of log
         GameObject logInstance1 = Instantiate(logSplit, transform.position, transform.rotation, null);
         GameObject logInstance2 = Instantiate(logSplit, transform.position, transform.rotation, null);
-        //rotate to blade
-        logInstance1.transform.Rotate(0, 0, 90);
-        logInstance2.transform.Rotate(0, 0, -90);
+        //rotate splits
+        logInstance1.transform.Rotate(0, 0, 0);
+        logInstance2.transform.Rotate(0, 0, 180);
         //apply force to splits
         logInstance1.GetComponent<Rigidbody>().AddForceAtPosition(logInstance1.transform.forward * 20, logInstance1.transform.position + new Vector3(0, 0, 1));
         logInstance2.GetComponent<Rigidbody>().AddForceAtPosition(logInstance2.transform.forward * -20, logInstance2.transform.position + new Vector3(0, 0, 1));
