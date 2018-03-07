@@ -23,21 +23,22 @@ public class WoodLog : MonoBehaviour {
 
     public virtual void ChopHit() { }
 
-    private void OnTriggerEnter(Collider collider)
+    private void OnCollisionEnter(Collision collision)
     {
-        print("collision");
-        if (collider.gameObject.layer == LayerMask.NameToLayer("Blade")) {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Blade"))
+        {
+            print("bladeCollision");
             //collision with axe Blade
-            float tiltAngle = collider.gameObject.GetComponent<Axe>().tiltAngle;
-            Vector3 velocity = collider.gameObject.GetComponent<Axe>().velocity;
+            float tiltAngle = collision.gameObject.GetComponent<Axe>().tiltAngle;
+            Vector3 velocity = collision.gameObject.GetComponent<Axe>().velocity;
 
             //print(tiltAngle);
 
-            CalculateHitImpact(collider.transform.parent, velocity, tiltAngle);
+            CalculateHitImpact(collision.transform.parent, velocity, tiltAngle, collision);
         }
     }
 
-    private void CalculateHitImpact(Transform axe, Vector3 bladeVelocity, float bladeTiltAngle) {
+    private void CalculateHitImpact(Transform axe, Vector3 bladeVelocity, float bladeTiltAngle, Collision collision) {
         float impactAngle = Vector3.Angle(Vector3.down, bladeVelocity.normalized);
 
         if (bladeTiltAngle <= 30) {
@@ -48,30 +49,37 @@ public class WoodLog : MonoBehaviour {
                 print(bladeVelocityMadnitude);
                 if (bladeVelocityMadnitude <= cutThreshold) {
                     //we are not Fast Enough
-                    //HIT THE LOG
                 } else
                 {
                     //at least fast enough to hit the log
                     if (bladeVelocityMadnitude <= splitResitance)
                     {
                         //we have enough impact to cut into the wood, but not enough to split it
-                        //CUT INTO Log
+                        CutLog(axe, bladeVelocity);
+                        return;
                     } else
                     {
                         //Impact is enough to split the log in half
                         SplitLog(axe);
+                        return;
                     }
                 }
             }
         }
+        if (bladeVelocity.magnitude >= 1.3f)
+        {
+            HitLog(collision.contacts[0].point, bladeVelocity);
+        }
     }
 
-    private void HitLog()
+    private void HitLog(Vector3 collisionPoint, Vector3 impactForce)
     {
-        ////diable physics components of log
-        //instantiate log rigidbody in position of log
-        //apply force to instance
-        //destroy gameopbject
+        gameObject.layer = LayerMask.NameToLayer("Environment");
+        Rigidbody rb = GetComponent<Rigidbody>();
+        rb.isKinematic = false;
+        rb.useGravity = true;
+        rb.constraints = RigidbodyConstraints.None;
+        rb.AddForceAtPosition(impactForce * 500, collisionPoint);
     }
     private void CutLog(Transform axe, Vector3 impactVelocity)
     {
@@ -79,10 +87,12 @@ public class WoodLog : MonoBehaviour {
         //set axe as parent
         transform.parent = axe.transform;
         //move log up the blade according to impact strength
-        Vector3 localPos = transform.localPosition;
-        localPos -= impactVelocity;
+        Vector3 position = transform.position;
+        float logLength = GetComponent<Collider>().bounds.size.y;
+        //position -= impactVelocity.normalized * (logLength / 2) * (impactVelocity.magnitude / splitResitance);
+        position -= impactVelocity.normalized * 0.1f;
         splitResitance -= impactVelocity.magnitude;
-        transform.localPosition = localPos;
+        transform.position = position;
 
     }
     private void SplitLog(Transform axe)
