@@ -142,5 +142,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cutThreshold: 1
-  splitResitance: 50
+  splitResitance: 15
   logSplit: {fileID: 1484831205726402, guid: fac8b784ceaa70f46a13c9be79331396, type: 2}
+  beingCut: 0

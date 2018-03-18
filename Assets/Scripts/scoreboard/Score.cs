@@ -43,13 +43,15 @@ public static class Score {
         splitcount++;
         CheckCombo();
         int hitScore = splitScore * comboMultiplier;
+        lastHitPos = position;
         AddScore(hitScore.ToString());
     }
     public static void Cut(Vector3 position)
     {
         resetCombo();
         CheckCombo();
-        int hitScore = splitScore * comboMultiplier;
+        int hitScore = cutScore * comboMultiplier;
+        lastHitPos = position;
         AddScore(hitScore.ToString());
     }
     public static void BirdHit(Vector3 position)
