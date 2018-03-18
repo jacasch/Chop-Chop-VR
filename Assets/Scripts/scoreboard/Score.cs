@@ -6,24 +6,39 @@ public static class Score {
     private const int splitScore = 100;
     private const int cutScore = 50;
     private const int birdHitPenaulty = -200;
-    private const int comboSteps = 2;
 
+    private static int splitCount = 0;
+    private static float lastSplitTime = 0;
+    private static float combotimeout = 1.5f;
+    private static readonly int[] comboSteps = {1,1,2,2,5,5,10,10};
     private static int comboMultiplier = 1;
-    private static int splitcount = 0;
     private static Vector3 lastHitPos = Vector3.zero;
 
     public static int score = 0;
 
     private static void resetCombo()
     {
-        splitcount = 0;
+        splitCount = 0;
         comboMultiplier = 1;
     }
     private static void CheckCombo() {
-        int nextComboMUltiplier = Mathf.FloorToInt(splitcount / comboSteps) + 1;
+        if (splitCount <= 0) {
+            //abort
+            return;
+        }
 
-        if (comboMultiplier != nextComboMUltiplier) {
-            FloatingText.Print("Combo X" + comboMultiplier.ToString(), lastHitPos, 0.012f, Color.red);
+        if (splitCount > comboSteps.Length)
+        {
+            //start fury mode
+            return;
+        }
+
+
+        comboMultiplier = comboSteps[splitCount];
+        int lastMultiplier = comboSteps[splitCount - 1];
+        if (comboMultiplier != lastMultiplier)
+        {
+            FloatingText.PrintInfrontOfPlayer("Combo X" + comboMultiplier.ToString(), 1.5f, 0.016f, Color.red);
         }
     }
 
@@ -40,7 +55,8 @@ public static class Score {
 
     public static void Split(Vector3 position)
     {
-        splitcount++;
+        splitCount++;
+        lastSplitTime = Time.time;
         CheckCombo();
         int hitScore = splitScore * comboMultiplier;
         lastHitPos = position;

@@ -27,7 +27,7 @@ GameObject:
   - component: {fileID: 114209493687365236}
   m_Layer: 9
   m_Name: normal_log
-  m_TagString: Untagged
+  m_TagString: Log
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -142,6 +142,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cutThreshold: 1
-  splitResitance: 15
+  splitResitance: 12
   logSplit: {fileID: 1484831205726402, guid: fac8b784ceaa70f46a13c9be79331396, type: 2}
   beingCut: 0

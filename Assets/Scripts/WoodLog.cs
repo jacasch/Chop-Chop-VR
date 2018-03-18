@@ -16,15 +16,20 @@ public class WoodLog : MonoBehaviour {
 
     private Vector3 cutNormalLocalSpace;
 
-	// Use this for initialization
-	void Start () {
+    private float spawnTime;
+    private float springTime = 0.15f;
+
+    // Use this for initialization
+    void Start () {
         leftOverResistance = splitResitance;
+        spawnTime = Time.time;
+        Spawn();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		
-	}
+        Spawn();
+    }
 
     public virtual void ChopHit() { }
     public virtual void ChopCut() { }
@@ -55,9 +60,8 @@ public class WoodLog : MonoBehaviour {
             CalculateCutImpact(transform.parent.Find("Blade").GetComponent<Axe>().velocity);
         }
     }
-
     private void CalculateHitImpact(Transform axe, Vector3 bladeVelocity, float bladeTiltAngle, Collision collision) {
-        float impactAngle = Vector3.Angle(Vector3.down, bladeVelocity.normalized);
+        float impactAngle = Mathf.Abs(Vector3.Angle(transform.up, bladeVelocity.normalized) - 90f);
 
         if (bladeTiltAngle <= 30) {
             //blade is is not tiltet off os there could actually be a cut
@@ -88,7 +92,6 @@ public class WoodLog : MonoBehaviour {
             HitLog(collision.contacts[0].point, bladeVelocity);
         }
     }
-
     private void CalculateCutImpact(Vector3 ImpactForce) {
         float AngleCutToImpact = Mathf.Abs(90 - Vector3.Angle(transform.localToWorldMatrix.MultiplyVector(cutNormalLocalSpace), ImpactForce));
 
@@ -164,5 +167,26 @@ public class WoodLog : MonoBehaviour {
         //destroy gameopbject
         ChopSplit();
         Destroy(gameObject);
+    }
+
+    private void Spawn() {
+        float time = Time.time - spawnTime;
+        float size = transform.localScale.magnitude / Vector3.one.magnitude;
+        float spring;
+
+        if (time < springTime)
+        {
+            //lerp to size 0.12
+            spring = Mathf.Lerp(0, 0.12f, time / springTime);
+            print(time);
+            print(springTime);
+
+        }
+        else {
+            //lerp to size 0.1
+            spring = Mathf.Lerp(0.12f, 0.1f, 1f / (springTime / 1.5f) * (time - springTime));
+
+        }
+        transform.localScale = Vector3.one * spring;
     }
 }
