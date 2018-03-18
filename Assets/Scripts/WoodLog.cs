@@ -10,7 +10,10 @@ public class WoodLog : MonoBehaviour {
 
     public GameObject logSplit;
 
-    private bool beingCut = false;
+    public bool beingCut = false;
+    private bool alreadySplit = false;
+    private float lastCollision = 0;
+
     private Vector3 cutNormalLocalSpace;
 
 	// Use this for initialization
@@ -24,11 +27,17 @@ public class WoodLog : MonoBehaviour {
 	}
 
     public virtual void ChopHit() { }
+    public virtual void ChopCut() { }
+    public virtual void ChopExtendCut() { }
+    public virtual void ChopSplit() { }
 
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Blade"))
         {
+            if (Time.time - lastCollision < 0.1f)
+                return;
+            lastCollision = Time.time;
             print("bladeCollision");
             //collision with axe Blade
             float tiltAngle = collision.gameObject.GetComponent<Axe>().tiltAngle;
@@ -40,7 +49,9 @@ public class WoodLog : MonoBehaviour {
         }
         if (beingCut)
         {
-            print(collision.collider.gameObject.name);
+            if (Time.time - lastCollision < 0.1f)
+                return;
+            lastCollision = Time.time;
             CalculateCutImpact(transform.parent.Find("Blade").GetComponent<Axe>().velocity);
         }
     }
@@ -53,7 +64,6 @@ public class WoodLog : MonoBehaviour {
             if (impactAngle <= 30) {
                 //we are hitting the log from the top and not the sides or anything
                 float bladeVelocityMadnitude = bladeVelocity.magnitude;
-                print(bladeVelocityMadnitude);
                 if (bladeVelocityMadnitude <= cutThreshold) {
                     //we are not Fast Enough
                 } else
@@ -81,8 +91,6 @@ public class WoodLog : MonoBehaviour {
 
     private void CalculateCutImpact(Vector3 ImpactForce) {
         float AngleCutToImpact = Mathf.Abs(90 - Vector3.Angle(transform.localToWorldMatrix.MultiplyVector(cutNormalLocalSpace), ImpactForce));
-        print(ImpactForce);
-        print(AngleCutToImpact);
 
         ExtendCut(ImpactForce);
         if (leftOverResistance <= 0) {
@@ -92,29 +100,32 @@ public class WoodLog : MonoBehaviour {
 
     private void HitLog(Vector3 collisionPoint, Vector3 impactForce)
     {
+        print("log hit registered");
         gameObject.layer = LayerMask.NameToLayer("Environment");
         Rigidbody rb = GetComponent<Rigidbody>();
         rb.isKinematic = false;
         rb.useGravity = true;
         rb.constraints = RigidbodyConstraints.None;
         rb.AddForceAtPosition(impactForce * 500, collisionPoint);
+        ChopHit(); ;
     }
     private void CutLog(Transform axe, Vector3 impactForce)
     {
+        print("log cut registered");
         beingCut = true;
-        print(axe.transform.forward.normalized);
         cutNormalLocalSpace = transform.worldToLocalMatrix.MultiplyVector(axe.transform.forward.normalized);
-        print(cutNormalLocalSpace);
         //set axe as parent
         transform.parent = axe.transform;
         //change collision layer to environment
         gameObject.layer = LayerMask.NameToLayer("Environment");
         //move log up the blade according to impact strength
         ExtendCut(impactForce);
+        ChopCut();
 
     }
     private void ExtendCut(Vector3 force)
     {
+        print("log cut extended");
         //Calculate new splitresistance
         leftOverResistance -= force.magnitude;
         //TODO Offset for relative blade placemnet on first cut
@@ -122,9 +133,14 @@ public class WoodLog : MonoBehaviour {
         Transform blade = transform.parent.Find("Blade");
         float halfLogLength = GetComponent<Collider>().bounds.size.y / 2f;
         transform.position = blade.position - transform.forward * halfLogLength * cutRatio - transform.forward * halfLogLength;
+        ChopExtendCut();
     }
     private void SplitLog(Transform axe)
     {
+        print("log split registered");
+        if (alreadySplit)
+            return;
+        alreadySplit = true;
         /*//diable physics components of log
         gameObject.GetComponent<Collider>().enabled = false;*/
 
@@ -134,7 +150,6 @@ public class WoodLog : MonoBehaviour {
         Vector3 logFwdProj = transform.up;
         logFwdProj.y = 0; //projection on xz plane (ground)
         float angleAxeToLog = Vector3.Angle(axeUpProj, logFwdProj);
-        print(angleAxeToLog);
         transform.Rotate(0, 0, angleAxeToLog);
         //instanitate 2 logsplits in position of log
         GameObject logInstance1 = Instantiate(logSplit, transform.position, transform.rotation, null);
@@ -147,6 +162,7 @@ public class WoodLog : MonoBehaviour {
         logInstance2.GetComponent<Rigidbody>().AddForceAtPosition(logInstance2.transform.forward * -20, logInstance2.transform.position + new Vector3(0, 0, 1));
         //slogInstance.GetComponent<Rigidbody>().AddForce(Vector3.up * 100);
         //destroy gameopbject
+        ChopSplit();
         Destroy(gameObject);
     }
 }

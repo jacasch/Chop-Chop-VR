@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class RegularWoodLog : WoodLog {
 
-    void ChopHit() {
-
+    public override void ChopSplit() {
+        int score = beingCut ? 50 : 100;
+        Score.Split(transform.position + Vector3.up * 0.6f);
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteInEditMode]
+//[ExecuteInEditMode]
 public class LogSpawner : MonoBehaviour {
     public GameObject normalLog;
     public float normalLogCommonness;
@@ -19,6 +19,7 @@ public class LogSpawner : MonoBehaviour {
 
     void Start() {
         playArea = GameObject.Find("[CameraRig]").GetComponent<SteamVR_PlayArea>();
+        FloatingText.Print("test", Vector3.zero);
     }
 
     void Update() {
