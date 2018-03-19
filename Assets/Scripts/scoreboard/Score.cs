@@ -14,7 +14,8 @@ public static class Score {
     private static int comboMultiplier = 1;
     private static Vector3 lastHitPos = Vector3.zero;
 
-    public static int score = 0;
+    private static int score = 0;
+    public static int CurrentScore { get { return score; } }
 
     private static void resetCombo()
     {
