@@ -12,7 +12,8 @@ public class WoodLog : MonoBehaviour {
 
     private float leftOverResistance;
 
-    public GameObject logSplit;
+    public GameObject logSplit1;
+    public GameObject logSplit2;
 
     public bool beingCut = false;
     private bool alreadySplit = false;
@@ -146,11 +147,11 @@ public class WoodLog : MonoBehaviour {
             if (cutRatio < 0.5)
             {
                 //change to log66
-                GetComponent<MeshFilter>().mesh = Log66;
+                transform.GetChild(0).GetComponent<MeshFilter>().mesh = Log66;
             }
             else {
                 //change to log83
-                GetComponent<MeshFilter>().mesh = Log83;
+                transform.GetChild(0).GetComponent<MeshFilter>().mesh = Log83;
             }
         }
         ChopExtendCut();
@@ -172,11 +173,11 @@ public class WoodLog : MonoBehaviour {
         float angleAxeToLog = Vector3.Angle(axeUpProj, logFwdProj);
         transform.Rotate(0, 0, angleAxeToLog);
         //instanitate 2 logsplits in position of log
-        GameObject logInstance1 = Instantiate(logSplit, transform.position, transform.rotation, null);
-        GameObject logInstance2 = Instantiate(logSplit, transform.position, transform.rotation, null);
+        GameObject logInstance1 = Instantiate(logSplit1, transform.position, transform.rotation, null);
+        GameObject logInstance2 = Instantiate(logSplit2, transform.position, transform.rotation, null);
         //rotate splits
-        logInstance1.transform.Rotate(0, 0, 0);
-        logInstance2.transform.Rotate(0, 0, 180);
+        logInstance1.transform.Rotate(0, 0, 180);
+        logInstance2.transform.Rotate(0, 0, 0);
         //apply force to splits
         logInstance1.GetComponent<Rigidbody>().AddForceAtPosition(logInstance1.transform.forward * 20, logInstance1.transform.position + new Vector3(0, 0, 1));
         logInstance2.GetComponent<Rigidbody>().AddForceAtPosition(logInstance2.transform.forward * -20, logInstance2.transform.position + new Vector3(0, 0, 1));
