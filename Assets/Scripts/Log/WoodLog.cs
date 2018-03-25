@@ -108,7 +108,7 @@ public class WoodLog : MonoBehaviour {
 
     private void HitLog(Vector3 collisionPoint, Vector3 impactForce, Transform axe)
     {
-        print("log hit registered");
+        //print("log hit registered");
         gameObject.layer = LayerMask.NameToLayer("Environment");
         Rigidbody rb = GetComponent<Rigidbody>();
         rb.isKinematic = false;
@@ -119,9 +119,11 @@ public class WoodLog : MonoBehaviour {
     }
     private void CutLog(Transform axe, Vector3 impactForce)
     {
-        print("log cut registered");
+        //print("log cut registered");
         beingCut = true;
         cutNormalLocalSpace = transform.worldToLocalMatrix.MultiplyVector(axe.transform.forward.normalized);
+        //rotate to blade
+        RotateToBlade(axe);
         //set axe as parent
         transform.parent = axe.transform;
         //change collision layer to environment
@@ -133,7 +135,7 @@ public class WoodLog : MonoBehaviour {
     }
     private void ExtendCut(Vector3 force, Transform axe)
     {
-        print("log cut extended");
+        //print("log cut extended");
         //Calculate new splitresistance
         leftOverResistance -= force.magnitude;
         //TODO Offset for relative blade placemnet on first cut
@@ -158,7 +160,7 @@ public class WoodLog : MonoBehaviour {
     }
     private void SplitLog(Transform axe)
     {
-        print("log split registered");
+        //print("log split registered");
         if (alreadySplit)
             return;
         alreadySplit = true;
@@ -166,12 +168,8 @@ public class WoodLog : MonoBehaviour {
         gameObject.GetComponent<Collider>().enabled = false;*/
 
         //rotate to blade
-        Vector3 axeUpProj = axe.transform.up;
-        axeUpProj.y = 0; //projection on xz plane (ground)
-        Vector3 logFwdProj = transform.up;
-        logFwdProj.y = 0; //projection on xz plane (ground)
-        float angleAxeToLog = Vector3.Angle(axeUpProj, logFwdProj);
-        transform.Rotate(0, 0, angleAxeToLog);
+        if (!beingCut)
+            RotateToBlade(axe);
         //instanitate 2 logsplits in position of log
         GameObject logInstance1 = Instantiate(logSplit1, transform.position, transform.rotation, null);
         GameObject logInstance2 = Instantiate(logSplit2, transform.position, transform.rotation, null);
@@ -196,8 +194,6 @@ public class WoodLog : MonoBehaviour {
         {
             //lerp to size 0.12
             spring = Mathf.Lerp(0, 0.12f, time / springTime);
-            print(time);
-            print(springTime);
 
         }
         else {
@@ -206,5 +202,17 @@ public class WoodLog : MonoBehaviour {
 
         }
         transform.localScale = Vector3.one * spring;
+    }
+
+    private void RotateToBlade(Transform axe) {
+        float mirror = Random.Range(0, 2) * 180f;
+        //rotate to blade
+        Vector3 axeUpProj = axe.transform.up;
+        axeUpProj.y = 0; //projection on xz plane (ground)
+        Vector3 logFwdProj = transform.up;
+        logFwdProj.y = 0; //projection on xz plane (ground)
+        float angleAxeToLog = Vector3.Angle(axeUpProj, logFwdProj);
+        transform.Rotate(0, 0, angleAxeToLog+mirror+10);
+        FloatingText.PrintInfrontOfPlayer(mirror.ToString(), 1f, 0.01f, Color.blue);
     }
 }

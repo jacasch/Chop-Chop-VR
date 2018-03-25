@@ -62,6 +62,7 @@ public static class Score {
         int hitScore = splitScore * comboMultiplier;
         lastHitPos = position;
         AddScore(hitScore.ToString());
+        score += hitScore;
     }
     public static void Cut(Vector3 position)
     {
@@ -70,6 +71,7 @@ public static class Score {
         int hitScore = cutScore * comboMultiplier;
         lastHitPos = position;
         AddScore(hitScore.ToString());
+        score += hitScore;
     }
     public static void BirdHit(Vector3 position)
     {

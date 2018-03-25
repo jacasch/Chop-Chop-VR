@@ -5,7 +5,9 @@ using UnityEngine;
 //[ExecuteInEditMode]
 public class LogSpawner : MonoBehaviour {
     public GameObject normalLog;
-    public float normalLogCommonness;
+    public GameObject gameStartLog;
+
+    private bool spawning = false;
     //public GameObject BirdLog;
     //public float BirdLogCommonness;
 
@@ -25,7 +27,7 @@ public class LogSpawner : MonoBehaviour {
 
     void Update() {
         logCount = GameObject.FindGameObjectsWithTag("Log").Length;
-        if ((Time.time - lastSpawnTime > 1f / spawnFrequency) && (logCount < maxLogs))
+        if (spawning && (Time.time - lastSpawnTime > 1f / spawnFrequency) && (logCount < maxLogs))
         {
             SpawnLog();
             lastSpawnTime = Time.time;
@@ -59,5 +61,28 @@ public class LogSpawner : MonoBehaviour {
         } while ((HeadsetPosProj - RandomSpawnPosProj).magnitude < minSpawnDistance);
 
         return new Vector3(RandomSpawnPosProj.x, 0, RandomSpawnPosProj.y);
+    }
+
+    public void StopSpawning() {
+        ClearLogs();
+        //stop spawning new logs
+        spawning = false;
+    }
+
+    public void StartSpawning() {
+        spawning = true;
+    }
+
+    public void SpawnPlayerReadyLog() {
+        ClearLogs();
+        GameObject.Instantiate(gameStartLog, RandomSpawnPosition(), normalLog.transform.rotation);
+    }
+
+    public void ClearLogs() {
+        //destroy all logs
+        foreach (GameObject log in GameObject.FindGameObjectsWithTag("Log"))
+        {
+            Destroy(log);
+        }
     }
 }
