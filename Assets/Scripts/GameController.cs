@@ -6,15 +6,19 @@ public class GameController : MonoBehaviour {
     private enum Gamestate { Start, Intro, Running, GameOver };
     [SerializeField]
     private Gamestate state = Gamestate.Intro;
+    [SerializeField]
+    private float playTime = 90f;
     private string currentPlayerName = "";
     private bool newStateFrame = true;
     private float elapsedStatetime = 0f;
     private GameDisplay display;
+    private GameScreenManager gameScreenManager;
 
     //Mono Funcitons
     private void Start()
     {
         display = GetComponentInChildren<GameDisplay>();
+        gameScreenManager = GameObject.FindObjectOfType<GameScreenManager>();
     }
     private void Update()
     {
@@ -72,15 +76,26 @@ public class GameController : MonoBehaviour {
 
     private void StartStart()
     {
-        GetComponent<LogSpawner>().SpawnPlayerReadyLog();
         playerReady = false;
-        string startmessage = "Um zu Beginnen,\nspalte das Holz\nmit der Axt!";
-        display.SetText(startmessage);
+        GetComponent<LogSpawner>().ClearLogs();
+        //string startmessage = "Um zu Beginnen,\nspalte das Holz\nmit der Axt!";
+        string message = "Wie heisst du?";        
+        display.SetText(message);
+        currentPlayerName = "";
+        gameScreenManager.SetVisibilities(false, true, false);
     }
     private void UpdateStart()
     {
         //if player name is entered show wood to split
         //if wood is split go to next scene
+    }
+
+    public void SetPlayerName(string name)
+    {
+        this.currentPlayerName = name;
+        GetComponent<LogSpawner>().SpawnPlayerReadyLog();
+        string message = "Hallo " + this.currentPlayerName.ToString() + "\nUm zu Beginnen,\nspalte das Holz\nmit der Axt!";
+        display.SetText(message);
     }
 
     public void PlayerIsReady() {
@@ -94,7 +109,7 @@ public class GameController : MonoBehaviour {
 
 
     static readonly string[] achtungFertigLos = new string[] { "Achtung", "Fertig", "Los" };
-    const float countdownInterval = 1f;
+    const float countdownInterval = 1.5f;
     float lastCountdownTime;
     int countdownIndex = 0;
     private void StartIntro()
@@ -103,6 +118,8 @@ public class GameController : MonoBehaviour {
         countdownIndex = 0;
         string startmessage = "Auf los gehts los!";
         display.SetText(startmessage);
+
+        gameScreenManager.SetVisibilities(false, false, true);
 
         //start counting down
         Countdown();
@@ -135,12 +152,12 @@ public class GameController : MonoBehaviour {
 
     const string text = "Zeit {0}\nPunkte {1}";
     string score;
-    const float playTime = 20f;
     private void StartRunning()
     {
         GetComponent<LogSpawner>().StartSpawning();
         string scoreText = "Punkte:" + Score.CurrentScore.ToString() ;
         display.ClearText();
+        gameScreenManager.SetVisibilities(false, false, true);
     }
     private void UpdateRunning()
     {
@@ -154,7 +171,17 @@ public class GameController : MonoBehaviour {
 
     private void updateScoreDisplay() {
         score = Score.CurrentScore.ToString();
-        display.SetText(string.Format(text, Mathf.Floor((playTime - elapsedStatetime) + 1).ToString(), Score.CurrentScore));
+        string countDownFormatted = TimeFormat.MinSec(playTime - elapsedStatetime);
+        display.SetText(string.Format(text, countDownFormatted, Score.CurrentScore));
+    }
+
+    public float LeftPlayTime()
+    {
+        if (state != Gamestate.Running)
+        {
+            return 0;
+        }
+        return playTime - elapsedStatetime;
     }
     #endregion
 
@@ -167,6 +194,7 @@ public class GameController : MonoBehaviour {
         GetComponent<LogSpawner>().StopSpawning();
         //show score and ScoreBoard
         display.SetText("Deine Punkte:\n" + Score.CurrentScore.ToString());
+        gameScreenManager.SetVisibilities(true, false, false);
         SaveScore();
     }
     private void UpdateGameOver()

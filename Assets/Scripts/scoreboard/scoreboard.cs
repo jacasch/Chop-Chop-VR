@@ -10,7 +10,6 @@ public class scoreboard : MonoBehaviour {
 
     private void Start() {
         scoreboardText = GetComponent<Text>();
-        Highscores.Add("test", Random.Range(10,1000));
         //Highscores.Clear();
     }
 

@@ -70,6 +70,7 @@ public class LogSpawner : MonoBehaviour {
     }
 
     public void StartSpawning() {
+        ClearLogs();
         spawning = true;
     }
 
