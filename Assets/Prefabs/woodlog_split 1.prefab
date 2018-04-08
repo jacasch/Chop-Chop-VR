@@ -41,7 +41,7 @@ GameObject:
   - component: {fileID: 64350809270341336}
   m_Layer: 10
   m_Name: woodlog_split 1
-  m_TagString: Untagged
+  m_TagString: Choped
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

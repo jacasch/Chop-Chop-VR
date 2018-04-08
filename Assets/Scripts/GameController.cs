@@ -78,6 +78,7 @@ public class GameController : MonoBehaviour {
     {
         playerReady = false;
         GetComponent<LogSpawner>().ClearLogs();
+        GetComponent<LogSpawner>().ClearChops();
         //string startmessage = "Um zu Beginnen,\nspalte das Holz\nmit der Axt!";
         string message = "Wie heisst du?";        
         display.SetText(message);

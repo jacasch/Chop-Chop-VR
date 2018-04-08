@@ -30,7 +30,8 @@ public static class Score {
 
         if (splitCount > comboSteps.Length)
         {
-            //start fury mode
+            LogSpawner spawner = GameObject.FindObjectOfType<LogSpawner>();
+            spawner.FurySpawning();
             return;
         }
 

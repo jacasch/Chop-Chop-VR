@@ -10,7 +10,7 @@ public class WoodLog : MonoBehaviour {
     public Mesh Log83;
     public Mesh Log66;
 
-    private float leftOverResistance;
+    public float leftOverResistance;
 
     public GameObject logSplit1;
     public GameObject logSplit2;
@@ -110,6 +110,7 @@ public class WoodLog : MonoBehaviour {
     {
         //print("log hit registered");
         gameObject.layer = LayerMask.NameToLayer("Environment");
+        gameObject.tag = "Choped";
         Rigidbody rb = GetComponent<Rigidbody>();
         rb.isKinematic = false;
         rb.useGravity = true;
@@ -141,8 +142,9 @@ public class WoodLog : MonoBehaviour {
         //TODO Offset for relative blade placemnet on first cut
         float cutRatio = leftOverResistance / splitResitance;
         Transform blade = transform.parent.Find("Blade");
-        float halfLogLength = GetComponent<Collider>().bounds.size.y / 2f;
-        transform.position = blade.position - transform.forward * halfLogLength * cutRatio - transform.forward * halfLogLength;
+        float logLength = GetComponent<Collider>().bounds.size.y;
+        float ratio = 2f;
+        transform.position = blade.position - transform.forward * logLength / ratio * cutRatio - transform.forward * (logLength - logLength / ratio);
         //chekc for model swap
         if (cutRatio < 0.75)
         {
@@ -213,6 +215,5 @@ public class WoodLog : MonoBehaviour {
         logFwdProj.y = 0; //projection on xz plane (ground)
         float angleAxeToLog = Vector3.Angle(axeUpProj, logFwdProj);
         transform.Rotate(0, 0, angleAxeToLog+mirror+10);
-        FloatingText.PrintInfrontOfPlayer(mirror.ToString(), 1f, 0.01f, Color.blue);
     }
 }

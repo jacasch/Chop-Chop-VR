@@ -8,6 +8,7 @@ TagManager:
   - projectile
   - Blade
   - Log
+  - Choped
   layers:
   - Default
   - TransparentFX

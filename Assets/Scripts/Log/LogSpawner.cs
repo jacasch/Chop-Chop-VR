@@ -17,6 +17,8 @@ public class LogSpawner : MonoBehaviour {
     int maxLogs = 5;
     private float lastSpawnTime = 0f;
     private int logCount = 0;
+    private float comboSpawnTimer = 0f;
+    private float comboTime = 5f;
 
     private SteamVR_PlayArea playArea;
     private Vector2 playAreaDimensions = new Vector2(2, 2);
@@ -31,6 +33,19 @@ public class LogSpawner : MonoBehaviour {
         {
             SpawnLog();
             lastSpawnTime = Time.time;
+        }
+
+        if (comboSpawnTimer > 0)
+        {
+            comboSpawnTimer -= Time.deltaTime;
+            if (spawning && (Time.time - lastSpawnTime > 0.2f) && (logCount < 100))
+            {
+                SpawnLog();
+                lastSpawnTime = Time.time;
+            }
+        }
+        else if (logCount > 5) {
+            ClearLogs();
         }
     }
 
@@ -74,6 +89,10 @@ public class LogSpawner : MonoBehaviour {
         spawning = true;
     }
 
+    public void FurySpawning() {
+        comboSpawnTimer = comboTime;
+    }
+
     public void SpawnPlayerReadyLog() {
         ClearLogs();
         GameObject.Instantiate(gameStartLog, RandomSpawnPosition(), normalLog.transform.rotation);
@@ -82,6 +101,15 @@ public class LogSpawner : MonoBehaviour {
     public void ClearLogs() {
         //destroy all logs
         foreach (GameObject log in GameObject.FindGameObjectsWithTag("Log"))
+        {
+            Destroy(log);
+        }
+    }
+
+    public void ClearChops()
+    {
+        //destroy all logs
+        foreach (GameObject log in GameObject.FindGameObjectsWithTag("Choped"))
         {
             Destroy(log);
         }
