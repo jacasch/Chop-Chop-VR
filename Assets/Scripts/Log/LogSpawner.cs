@@ -21,7 +21,7 @@ public class LogSpawner : MonoBehaviour {
     private float comboTime = 5f;
 
     private SteamVR_PlayArea playArea;
-    private Vector2 playAreaDimensions = new Vector2(2, 2);
+    public Vector2 playAreaDimensions = new Vector2(2, 2);
 
     void Start() {
         playArea = GameObject.Find("[CameraRig]").GetComponent<SteamVR_PlayArea>();
