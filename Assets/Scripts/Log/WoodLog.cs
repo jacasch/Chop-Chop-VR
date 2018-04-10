@@ -211,9 +211,16 @@ public class WoodLog : MonoBehaviour {
         //rotate to blade
         Vector3 axeUpProj = axe.transform.up;
         axeUpProj.y = 0; //projection on xz plane (ground)
+        axeUpProj = axeUpProj.normalized;
         Vector3 logFwdProj = transform.up;
         logFwdProj.y = 0; //projection on xz plane (ground)
+        logFwdProj = logFwdProj.normalized;
         float angleAxeToLog = Vector3.Angle(axeUpProj, logFwdProj);
+        float xDiff = axeUpProj.x - logFwdProj.x;
+        if (xDiff > 0)
+            angleAxeToLog *= -1;
+
+        FloatingText.Print(xDiff.ToString(), transform.position);
         transform.Rotate(0, 0, angleAxeToLog+mirror+10);
     }
 }

@@ -38,7 +38,7 @@ public class LogSpawner : MonoBehaviour {
         if (comboSpawnTimer > 0)
         {
             comboSpawnTimer -= Time.deltaTime;
-            if (spawning && (Time.time - lastSpawnTime > 0.2f) && (logCount < 100))
+            if (spawning && (Time.time - lastSpawnTime > 0.2f) && (logCount < 20))
             {
                 SpawnLog();
                 lastSpawnTime = Time.time;
