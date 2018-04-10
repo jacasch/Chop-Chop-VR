@@ -219,8 +219,6 @@ public class WoodLog : MonoBehaviour {
         float xDiff = axeUpProj.x - logFwdProj.x;
         if (xDiff > 0)
             angleAxeToLog *= -1;
-
-        FloatingText.Print(xDiff.ToString(), transform.position);
         transform.Rotate(0, 0, angleAxeToLog+mirror+10);
     }
 }
