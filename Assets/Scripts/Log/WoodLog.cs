@@ -24,10 +24,13 @@ public class WoodLog : MonoBehaviour {
     private float spawnTime;
     private float springTime = 0.15f;
 
+    private LogSound audio;
+
     // Use this for initialization
     void Start () {
         leftOverResistance = splitResitance;
         spawnTime = Time.time;
+        audio = GetComponent<LogSound>();
         Spawn();
 	}
 	
@@ -158,6 +161,11 @@ public class WoodLog : MonoBehaviour {
                 transform.GetChild(0).GetComponent<MeshFilter>().mesh = Log83;
             }
         }
+
+        if (audio != null)
+        {
+            audio.PlayCutSound();
+        }
         ChopExtendCut();
     }
     private void SplitLog(Transform axe)
@@ -173,16 +181,18 @@ public class WoodLog : MonoBehaviour {
         if (!beingCut)
             RotateToBlade(axe);
         //instanitate 2 logsplits in position of log
-        GameObject logInstance1 = Instantiate(logSplit1, transform.position, transform.rotation, null);
-        GameObject logInstance2 = Instantiate(logSplit2, transform.position, transform.rotation, null);
+        GameObject logInstance1 = Instantiate(logSplit1, transform.position, transform.rotation, null) as GameObject;
+        GameObject logInstance2 = Instantiate(logSplit2, transform.position, transform.rotation, null) as GameObject;
         //rotate splits
         logInstance1.transform.Rotate(0, 0, 180);
         logInstance2.transform.Rotate(0, 0, 0);
         //apply force to splits
         logInstance1.GetComponent<Rigidbody>().AddForceAtPosition(logInstance1.transform.forward * 20, logInstance1.transform.position + new Vector3(0, 0, 1));
         logInstance2.GetComponent<Rigidbody>().AddForceAtPosition(logInstance2.transform.forward * -20, logInstance2.transform.position + new Vector3(0, 0, 1));
+        logInstance1.GetComponent<LogSound>().PlaySplitSound();
         //slogInstance.GetComponent<Rigidbody>().AddForce(Vector3.up * 100);
         //destroy gameopbject
+
         ChopSplit();
         Destroy(gameObject);
     }
